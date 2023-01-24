@@ -18,10 +18,12 @@ import br.com.bookapi.application.core.domain.Author;
 import br.com.bookapi.application.ports.input.AuthorServicePort;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @RestController
 @RequestMapping("/author")
 @AllArgsConstructor
+@Log4j2
 public class AuthorController {
 
 	private final AuthorServicePort authorServicePort;
@@ -29,6 +31,8 @@ public class AuthorController {
 	@ResponseStatus(code = HttpStatus.CREATED)
 	@PostMapping
 	public void save(@RequestBody @Valid AuthorRequest authorRequest) {
+		log.info("Salvando dados de author: {}");
+		
 		Author author = AuthorMapper.toAuthor(authorRequest);
 		authorServicePort.save(author);
 	}

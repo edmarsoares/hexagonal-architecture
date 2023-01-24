@@ -1,0 +1,47 @@
+<configuration debug="false">
+	<include
+		resource="org/springframework/boot/logging/logback/base.xml" />
+	<springProperty scope="context" name="logstash-host"
+		source="logstash.info.host" defaultValue="localhost" />
+	<springProperty scope="context" name="logstash-port"
+		source="logstash.info.port" defaultValue="5000" />
+	<appender name="stash"
+		class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+		<destination>${logstash-host}:${logstash-port}</destination>
+		<encoder
+			class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+			<providers>
+				<mdc />
+				<!-- MDC variables on the Thread will be written as JSON fields -->
+				<context />
+				<!-- Outputs entries from logback's context -->
+				<version />
+				<!-- Logstash json format version, the @version field in the output -->
+				<logLevel />
+				<loggerName />
+				<pattern>
+					<pattern>
+						{
+						<!-- we can add some custom fields to be sent with all the log entries. -->
+						<!-- make filtering easier in Logstash -->
+						"appName": "api-repository", "appVersion": "1.0" }
+					</pattern>
+				</pattern>
+				<threadName />
+				<message />
+				<logstashMarkers />
+				<!-- Useful so we can add extra information for specific log lines as 
+					Markers -->
+				<arguments />
+				<!-- or through StructuredArguments -->
+				<stackTrace />
+			</providers>
+		</encoder>
+	</appender>
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="stash" />
+	</root>
+	<logger name="org.springframework" level="INFO" />
+	<logger name="com.sivalabs" level="DEBUG" />
+</configuration>
